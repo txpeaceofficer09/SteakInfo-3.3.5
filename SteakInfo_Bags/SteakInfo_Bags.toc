@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: SteakInfo: Money
+## Notes: Add a money module to SteakInfo.
+## Author: Soonbesteak
+## Version 1.0.0
+## RequiredDeps: SteakInfo
+Core.lua
