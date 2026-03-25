@@ -28,7 +28,7 @@ SteakInfoTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 SteakInfoTooltip:SetBackdrop( { bgFile   = SteakInfoFrame.bgFile, edgeFile = SteakInfoFrame.edgeFile, edgeSize = 1, insets   = { left = 0, right = 0, top = 0, bottom = 0 } } )
 
-for i = 1, 30 do
+for i = 1, 60 do
 	local left = _G["SteakInfoTooltipTextLeft"..i]
 	local right = _G["SteakInfoTooltipTextRight"..i]
 
