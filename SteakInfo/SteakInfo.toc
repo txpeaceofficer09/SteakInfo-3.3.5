@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: SteakInfo
+## Notes: Create a bar at the bottom of the screen to display info.
+## Author: Soonbesteak
+## Version: 1.0.0
+## SavedVariables: SteakInfoDB
+Core.lua
