@@ -1,8 +1,9 @@
 local frame = CreateFrame("Frame", nil, UIParent)
 local borderColor = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
+
 frame:EnableMouse(false)
 frame:SetClampedToScreen(true)
-frame:SetBackdrop( { bgFile = "Interface\\ChatFrame\\ChatFrameBackground", edgeFile = "Interface\\Buttons\\WHITE8x8", edgeSize = 1, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
+frame:SetBackdrop( { bgFile = SteakInfoFrame.bgFile, edgeFile = SteakInfoFrame.edgeFile, edgeSize = 1, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
 frame:SetBackdropColor(0, 0, 0, 0.8)
 frame:SetBackdropBorderColor(borderColor.r or 1, borderColor.g or 0.5, borderColor.b or 0, 1)
 frame:SetFrameStrata("TOOLTIP")
@@ -209,9 +210,22 @@ local function OnPlayerEnteringWorld(self)
 end
 
 local function OnSystemMessage(self, msg)
-	if msg:find("has come online") or msg:find("has gone offline") then
-		GuildRoster()
+	local patterns = {
+		"has come online",
+		"has gone offline",
+		"has joined the guild",
+		"has left the guild"
+	}
+
+	for _, pattern in ipairs(patterns) do
+		if msg:find(pattern) then
+			GuildRoster()
+		end
 	end
+
+	--if msg:find("has come online") or msg:find("has gone offline") then
+	--	GuildRoster()
+	--end
 end
 
 local events = {
