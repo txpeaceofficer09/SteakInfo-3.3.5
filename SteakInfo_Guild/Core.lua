@@ -63,7 +63,7 @@ local function ShowRoster()
 	for _, bar in ipairs(bars) do bar:Hide() end
 
 	if not header then
-		header = CreateFrame("Frame", nil, f)
+		header = CreateFrame("Frame", nil, frame)
 		header:SetHeight(16)
 		header:SetPoint("TOPLEFT", f, "TOPLEFT", 2, -2)
 		header:SetPoint("TOPRIGHT", f, "TOPRIGHT", -2, -2)
@@ -108,7 +108,7 @@ local function ShowRoster()
 		local bar = bars[rowIndex]
 
 		if not bar then
-			bar = CreateFrame("StatusBar", nil, f)
+			bar = CreateFrame("StatusBar", nil, frame)
 			bar:SetMinMaxValues(1, 80)
 			bar:SetHeight(16)
 			bar:SetStatusBarTexture("Interface\\TARGETINGFRAME\\UI-StatusBar")
