@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: SteakInfo: Guild
+## Notes: Add a guild module to SteakInfo.
+## Author: Soonbesteak
+## Version 1.0.0
+## RequiredDeps: SteakInfo
+Core.lua
