@@ -54,44 +54,53 @@ local function ShowRoster()
 
 	local PAD = 10
 
+	--[[
 	maxName  = maxName  + PAD
 	maxLevel = maxLevel + PAD
 	maxRank  = maxRank  + PAD
 	maxZone  = maxZone  + PAD
 	maxNote  = maxNote  + PAD
+	]]
 
 	for _, bar in ipairs(bars) do bar:Hide() end
 
 	if not header then
 		header = CreateFrame("Frame", nil, frame)
 		header:SetHeight(16)
-		header:SetPoint("TOPLEFT", f, "TOPLEFT", 2, -2)
-		header:SetPoint("TOPRIGHT", f, "TOPRIGHT", -2, -2)
+		header:SetPoint("TOPLEFT", frame, "TOPLEFT", 2, -2)
+		header:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -2, -2)
 
 		header.name = header:CreateFontString(nil, "OVERLAY")
 		header.name:SetFont("Interface\\AddOns\\SteakInfo\\Audiowide-Regular.ttf", 8, "OUTLINE")
 		header.name:SetText("Name")
+		header.name:SetJustifyH("LEFT")
 		header.name:SetPoint("LEFT", header, "LEFT", 0, 0)
 
 		header.level = header:CreateFontString(nil, "OVERLAY")
 		header.level:SetFont("Interface\\AddOns\\SteakInfo\\Audiowide-Regular.ttf", 8, "OUTLINE")
 		header.level:SetText("Level")
+		header.level:SetJustifyH("LEFT")
 		header.level:SetPoint("LEFT", header.name, "RIGHT", 0, 0)
 
 		header.rank = header:CreateFontString(nil, "OVERLAY")
 		header.rank:SetFont("Interface\\AddOns\\SteakInfo\\Audiowide-Regular.ttf", 8, "OUTLINE")
 		header.rank:SetText("Rank")
+		header.rank:SetJustifyH("LEFT")
 		header.rank:SetPoint("LEFT", header.level, "RIGHT", 0, 0)
 
 		header.zone = header:CreateFontString(nil, "OVERLAY")
 		header.zone:SetFont("Interface\\AddOns\\SteakInfo\\Audiowide-Regular.ttf", 8, "OUTLINE")
-		header.zone:SetText("Level")
+		header.zone:SetText("Zone")
+		header.zone:SetJustifyH("LEFT")
 		header.zone:SetPoint("LEFT", header.rank, "RIGHT", 0, 0)
 
 		header.note = header:CreateFontString(nil, "OVERLAY")
 		header.note:SetFont("Interface\\AddOns\\SteakInfo\\Audiowide-Regular.ttf", 8, "OUTLINE")
-		header.note:SetText("Level")
+		header.note:SetText("Note")
+		header.note:SetJustifyH("LEFT")
 		header.note:SetPoint("LEFT", header.zone, "RIGHT", 0, 0)
+	end
+	--[[
 	else
 		header.name:SetWidth(maxName)
 		header.level:SetWidth(maxLevel)
@@ -100,6 +109,19 @@ local function ShowRoster()
 		header.note:SetWidth(maxNote)
 		header:Show()
 	end
+	]]
+
+	maxName = math.max(header.name:GetStringWidth(), maxName) + PAD
+	maxLevel = math.max(header.level:GetStringWidth(), maxLevel) + PAD
+	maxRank = math.max(header.rank:GetStringWidth(), maxRank) + PAD
+	maxZone = math.max(header.zone:GetStringWidth(), maxZone) + PAD
+	maxNote = math.max(header.note:GetStringWidth(), maxNote) + PAD
+
+	header.name:SetWidth(maxName)
+	header.level:SetWidth(maxLevel)
+	header.rank:SetWidth(maxRank)
+	header.zone:SetWidth(maxZone)
+	header.note:SetWidth(maxNote)
 
 	local rowIndex = 1
 
@@ -115,23 +137,23 @@ local function ShowRoster()
 			bars[rowIndex] = bar
 
 			bar.nameText  = bar:CreateFontString(nil, "OVERLAY")
-			bar.nameText:SetFont(SteakInfo.fontFile, 8, "OUTLINE")
+			bar.nameText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.nameText:SetJustifyH("LEFT")
 
 			bar.levelText = bar:CreateFontString(nil, "OVERLAY")
-			bar.levelText:SetFont(SteakInfo.fontFile, 8, "OUTLINE")
+			bar.levelText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.levelText:SetJustifyH("LEFT")
 
 			bar.rankText  = bar:CreateFontString(nil, "OVERLAY")
-			bar.rankText:SetFont(SteakInfo.fontFile, 8, "OUTLINE")
+			bar.rankText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.rankText:SetJustifyH("LEFT")
 
 			bar.zoneText  = bar:CreateFontString(nil, "OVERLAY")
-			bar.zoneText:SetFont(SteakInfo.fontFile, 8, "OUTLINE")
+			bar.zoneText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.zoneText:SetJustifyH("LEFT")
 
 			bar.noteText  = bar:CreateFontString(nil, "OVERLAY")
-			bar.noteText:SetFont(SteakInfo.fontFile, 8, "OUTLINE")
+			bar.noteText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.noteText:SetJustifyH("LEFT")
 		end
 
