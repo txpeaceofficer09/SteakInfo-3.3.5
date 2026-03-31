@@ -28,7 +28,7 @@ SteakInfoTooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 SteakInfoTooltip:SetBackdrop( { bgFile   = SteakInfoFrame.bgFile, edgeFile = SteakInfoFrame.edgeFile, edgeSize = 1, insets   = { left = 0, right = 0, top = 0, bottom = 0 } } )
 
-for i = 1, 60 do
+for i=1,5 do
 	local left = _G["SteakInfoTooltipTextLeft"..i]
 	local right = _G["SteakInfoTooltipTextRight"..i]
 
@@ -37,6 +37,14 @@ for i = 1, 60 do
 end
 
 SteakInfoTooltip:HookScript("OnShow", function(self)
+	for i=6,70 do
+		local left = _G["SteakInfoTooltipTextLeft"..i]
+		local right = _G["SteakInfoTooltipTextRight"..i]
+
+		if left then left:SetFont(SteakInfoFrame.fontFile, 10, "OUTLINE") end
+		if right then right:SetFont(SteakInfoFrame.fontFile, 10, "OUTLINE") end
+	end
+
 	SteakInfoTooltip:SetBackdropColor(0, 0, 0, 0.9)
 	SteakInfoTooltip:SetBackdropBorderColor(borderColor.r, borderColor.g, borderColor.b, 1)
 end)
