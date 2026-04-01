@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: SteakInfo: Flask Check
+## Notes: Add a flask module to SteakInfo.
+## Author: Soonbesteak
+## Version 1.0.0
+## RequiredDeps: SteakInfo
+Core.lua
