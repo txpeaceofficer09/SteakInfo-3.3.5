@@ -31,11 +31,11 @@ local function EnsureSpellRecord(event, spellID, spellName, spellSchool)
 	if not record then
 		record = {
 			--spellID = spellID,
-			name = spellName or ("Spell "..spellID),
+			name = key or ("Spell "..spellID),
 			school = spellSchool or 1,
-			damage = { normal = 0, crit = 0 },
-			healing = { normal = 0, crit = 0 },
-			absorbs = { normal = 0, crit = 0 },
+			damage = { normal = 0, normalTarget = "", crit = 0, critTarget = "" },
+			healing = { normal = 0, normalTarget = "", crit = 0, critTarget = "" },
+			absorbs = { normal = 0, normalTarget = "", crit = 0, critTarget = "" }
 		}
 		DB[key] = record
 	end
@@ -43,7 +43,7 @@ local function EnsureSpellRecord(event, spellID, spellName, spellSchool)
 	return record
 end
 
-local function UpdateRecord(event, spellID, spellName, spellSchool, kind, amount, critical)
+local function UpdateRecord(event, spellID, spellName, spellSchool, kind, amount, critical, target)
 	if not spellID or not amount or amount <= 0 then return end
 	if not IsSpellKnown(spellID) then return end
 
@@ -53,8 +53,10 @@ local function UpdateRecord(event, spellID, spellName, spellSchool, kind, amount
 	if not data then return end
 
 	if critical then
+		if amount > data.crit then data.critTarget = target end
 		data.crit = math.max(amount, data.crit)
 	else
+		if amount > data.normal then data.normalTarget = target end
 		data.normal = math.max(amount, data.normal)
 	end
 end
@@ -69,25 +71,24 @@ local function OnCombatEvent(self, event, ...)
 
 		if event:match("periodic") then spellName = spellName.." (DoT)" end
 
-		UpdateRecord(event, spellID, spellName, spellSchool, "damage", amount, critical)
+		UpdateRecord(event, spellID, spellName, spellSchool, "damage", amount, critical, destName)
 	elseif event == "SPELL_HEAL" or event == "SPELL_PERIODIC_HEAL" then
 		local _, _, _, _, _, _, _, _, spellID, spellName, spellSchool, amount, _, _, critical = ...
 
 		if event:match("periodic") then spellName = spellName.." (HoT)" end
 
-		UpdateRecord(event, spellID, spellName, spellSchool, "healing", amount, critical)
+		UpdateRecord(event, spellID, spellName, spellSchool, "healing", amount, critical, destName)
 	elseif event == "SPELL_ABSORBED" then
 		local _, _, _, _, _, _, _, _, spellID, spellName, spellSchool, amount = ...
 
 		if type(spellID) == "number" and type(amount) == "number" then
-			UpdateRecord(event, spellID, spellName, spellSchool, "absorbs", amount, false)
+			UpdateRecord(event, spellID, spellName, spellSchool, "absorbs", amount, false, destName)
 		end
 	end
 end
 
-local fontPath = "Interface\\AddOns\\SteakInfo\\Audiowide-Regular.ttf"
-
-local recordsFrame = CreateFrame("Frame", "SteakInfoRecordsFrame", UIParent)
+--local recordsFrame = CreateFrame("Frame", "SteakInfoRecordsFrame", UIParent)
+local recordsFrame = CreateFrame("Frame", nil, UIParent)
 recordsFrame:SetClampedToScreen(true)
 recordsFrame:SetBackdrop( { bgFile = SteakInfoFrame.bgFile, edgeFile = SteakInfoFrame.edgeFile, edgeSize = 1, insets = { left = 0, right = 0, top = 0, bottom = 0 } } )
 recordsFrame:SetBackdropColor(0, 0, 0, 0.9)
@@ -110,7 +111,9 @@ local function BuildAbilityList()
 				name = record.name,
 				school = record.school,
 				normal = data.normal,
+				normalTarget = data.normalTarget,
 				crit = data.crit,
+				critTarget = data.critTarget
 			}
 		end
 	end
@@ -135,9 +138,9 @@ local function ShowRecords(anchorFrame)
 	end
 
 	local temp = UIParent:CreateFontString(nil, "OVERLAY")
-	temp:SetFont(fontPath, 8, "OUTLINE")
+	temp:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 
-	local maxName, maxNormal, maxCrit = 0, 0, 0
+	local maxName, maxNormal, maxNormalTarget, maxCrit, maxCritTarget = 0, 0, 0, 0, 0
 	local PAD = 10
 
 	for _, a in ipairs(abilities) do
@@ -147,8 +150,14 @@ local function ShowRecords(anchorFrame)
 		temp:SetText(a.normal > 0 and tostring(a.normal) or "-")
 		maxNormal = math.max(maxNormal, temp:GetStringWidth())
 
+		temp:SetText(a.normalTarget or "")
+		maxNormalTarget = math.max(maxNormalTarget, temp:GetStringWidth())
+
 		temp:SetText(a.crit > 0 and tostring(a.crit) or "-")
 		maxCrit = math.max(maxCrit, temp:GetStringWidth())
+
+		temp:SetText(a.critTarget or "")
+		maxCritTarget = math.max(maxCritTarget, temp:GetStringWidth())
 	end
 
 	temp:SetText("Ability")
@@ -157,8 +166,14 @@ local function ShowRecords(anchorFrame)
 	temp:SetText("Normal")
 	maxNormal = math.max(maxNormal, temp:GetStringWidth()) + PAD
 
+	temp:SetText("Normal Target")
+	maxNormalTarget = math.max(maxNormalTarget, temp:GetStringWidth()) + PAD
+
 	temp:SetText("Critical")
 	maxCrit = math.max(maxCrit, temp:GetStringWidth()) + PAD
+
+	temp:SetText("Critical Target")
+	maxCritTarget = math.max(maxCritTarget, temp:GetStringWidth()) + PAD
 
 	for _, bar in ipairs(bars) do bar:Hide() end
 
@@ -169,25 +184,39 @@ local function ShowRecords(anchorFrame)
 		header:SetPoint("TOPRIGHT", recordsFrame, "TOPRIGHT", -2, -2)
 
 		header.name = header:CreateFontString(nil, "OVERLAY")
-		header.name:SetFont(fontPath, 8, "OUTLINE")
+		header.name:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 		header.name:SetText("Ability")
 		header.name:SetJustifyH("LEFT")
 		header.name:SetWidth(maxName)
 		header.name:SetPoint("LEFT", header, "LEFT", 0, 0)
 
 		header.normal = header:CreateFontString(nil, "OVERLAY")
-		header.normal:SetFont(fontPath, 8, "OUTLINE")
+		header.normal:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 		header.normal:SetText("Normal")
 		header.normal:SetJustifyH("RIGHT")
-		header.normal:SetWidth(maxName)
+		header.normal:SetWidth(maxNormal)
 		header.normal:SetPoint("LEFT", header.name, "RIGHT", 0, 0)
 
+		header.normalTarget = header:CreateFontString(nil, "OVERLAY")
+		header.normalTarget:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
+		header.normalTarget:SetText("Normal Target")
+		header.normalTarget:SetJustifyH("LEFT")
+		header.normalTarget:SetWidth(maxNormalTarget)
+		header.normalTarget:SetPoint("LEFT", header.normal, "RIGHT", 0, 0)
+
 		header.crit = header:CreateFontString(nil, "OVERLAY")
-		header.crit:SetFont(fontPath, 8, "OUTLINE")
+		header.crit:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 		header.crit:SetText("Critical")
 		header.crit:SetJustifyH("RIGHT")
 		header.crit:SetWidth(maxCrit)
-		header.crit:SetPoint("LEFT", header.normal, "RIGHT", 0, 0)
+		header.crit:SetPoint("LEFT", header.normalTarget, "RIGHT", 0, 0)
+
+		header.critTarget = header:CreateFontString(nil, "OVERLAY")
+		header.critTarget:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
+		header.critTarget:SetText("Critical Target")
+		header.critTarget:SetJustifyH("LEFT")
+		header.critTarget:SetWidth(maxCritTarget)
+		header.critTarget:SetPoint("LEFT", header.crit, "RIGHT", 0, 0)
 	else
 		header.name:SetWidth(maxName)
 		header.normal:SetWidth(maxNormal)
@@ -217,16 +246,24 @@ local function ShowRecords(anchorFrame)
 			bars[rowIndex] = bar
 
 			bar.nameText = bar:CreateFontString(nil, "OVERLAY")
-			bar.nameText:SetFont(fontPath, 8, "OUTLINE")
+			bar.nameText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.nameText:SetJustifyH("LEFT")
 
 			bar.normalText = bar:CreateFontString(nil, "OVERLAY")
-			bar.normalText:SetFont(fontPath, 8, "OUTLINE")
+			bar.normalText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.normalText:SetJustifyH("RIGHT")
 
+			bar.normalTargetText = bar:CreateFontString(nil, "OVERLAY")
+			bar.normalTargetText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
+			bar.normalTargetText:SetJustifyH("LEFT")
+
 			bar.critText = bar:CreateFontString(nil, "OVERLAY")
-			bar.critText:SetFont(fontPath, 8, "OUTLINE")
+			bar.critText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
 			bar.critText:SetJustifyH("RIGHT")
+
+			bar.critTargetText = bar:CreateFontString(nil, "OVERLAY")
+			bar.critTargetText:SetFont(SteakInfoFrame.fontFile, 8, "OUTLINE")
+			bar.critTargetText:SetJustifyH("LEFT")
 		end
 
 		bar:ClearAllPoints()
@@ -254,16 +291,24 @@ local function ShowRecords(anchorFrame)
 		bar.normalText:SetWidth(maxNormal)
 		bar.normalText:SetText(a.normal > 0 and tostring(a.normal) or "-")
 
-		bar.critText:SetPoint("LEFT", bar.normalText, "RIGHT", 0, 0)
+		bar.normalTargetText:SetPoint("LEFT", bar.normalText, "RIGHT", 0, 0)
+		bar.normalTargetText:SetWidth(maxNormalTarget)
+		bar.normalTargetText:SetText(a.normalTarget ~= "" and a.normalTarget or "-")
+
+		bar.critText:SetPoint("LEFT", bar.normalTargetText, "RIGHT", 0, 0)
 		bar.critText:SetWidth(maxCrit)
 		bar.critText:SetText(a.crit > 0 and tostring(a.crit) or "-")
+
+		bar.critTargetText:SetPoint("LEFT", bar.critText, "RIGHT", 0, 0)
+		bar.critTargetText:SetWidth(maxCritTarget)
+		bar.critTargetText:SetText(a.critTarget ~= "" and a.critTarget or "-")
 
 		bar:Show()
 		rowIndex = rowIndex + 1
 	end
 
 	local totalRows = rowIndex - 1
-	local totalWidth = maxName + maxNormal + maxCrit + 4
+	local totalWidth = maxName + maxNormal + maxNormalTarget + maxCrit + maxCritTarget + 4
 	local totalHeight = 16 + 2 + totalRows * 17 + 4
 
 	recordsFrame:SetSize(totalWidth, totalHeight)
