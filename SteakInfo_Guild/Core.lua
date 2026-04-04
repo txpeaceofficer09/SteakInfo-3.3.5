@@ -242,12 +242,18 @@ local function OnSystemMessage(self, msg)
 	for _, pattern in ipairs(patterns) do
 		if msg:find(pattern) then
 			GuildRoster()
+			break
 		end
 	end
 
 	--if msg:find("has come online") or msg:find("has gone offline") then
 	--	GuildRoster()
 	--end
+end
+
+local function OnClick(self, button)
+	PanellTemplates_SetTab(FriendsFrame, 3)
+	ShowUIPanel(FriendsFrame)
 end
 
 local events = {
@@ -258,7 +264,8 @@ local events = {
 
 local scripts = {
 	OnEnter = OnEnter,
-	OnLeave = OnLeave
+	OnLeave = OnLeave,
+	OnClick = OnClick
 }
 
 SteakInfo_AddModule(events, scripts, "Guild")
