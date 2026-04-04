@@ -85,6 +85,18 @@ local function BuildFlaskList()
 	return list
 end
 
+local function OnClick(self, button)
+	local list = BuildFlaskList()
+	local chatType = GetNumRaidMembers() > 0 and "RAID" or GetNumPartyMembers() > 0 and "PARTY" or "YELL"
+
+	SendChatMessage("Flasks:", chatType)
+
+	for _, data in ipairs(list) do
+		local message = ("%s %s (%s)"):format(data.name, data.flask, data.remaining)
+		SendChatMessage(message, chatType)
+	end
+end
+
 local function OnEnter(self)
 	if UnitAffectingCombat("player") then return end
 
@@ -153,13 +165,37 @@ local events = {
 		if unit and (UnitInRaid(unit) or UnitInParty(unit) or unit == "player") then
 			self.timer = 5
 		end
+	end,
+	READY_CHECK = function(self, sender, id)
+		local groupType = GetNumRaidMembers() > 0 and "raid" or "party"
+		local numGroupMembers = gropType == "raid" and GetNumRaidMembers() or GetNumPartyMembers()
+		local chatType = GetNumRaidMembers() > 0 and "RAID" or GetNumPartyMembers() > 0 and "PARTY" or "YELL"
+
+		local missing = {}
+
+		for i=1,numGroupMembers do
+			local unit = groupType..i
+
+			if UnitExists(unit) and not GetUnitFlask(unit) then table.insert(missing, UnitName(unit)) end
+		end
+
+		if groupType == "party" then
+			if not GetUnitFlask("player") then table.insert(missing, UnitName("player")) end
+		end
+
+		if #missing == 0 then
+			SendChatMessage("All group members are flasked.", chatType)
+		else
+			SendChatMessage(("Missing flask: %s"):format(table.concat(missing, ", ")))
+		end
 	end
 }
 
 local scripts = {
 	OnEnter = OnEnter,
 	OnLeave = OnLeave,
-	OnUpdate = OnUpdate
+	OnUpdate = OnUpdate,
+	OnClick = OnClick
 }
 
 SteakInfo_AddModule(events, scripts, "Flask Check")
