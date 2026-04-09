@@ -93,6 +93,7 @@ function SteakInfoFrame:LayoutModules()
 end
 
 local function Module_SetText(self, text)
+	self.text:SetJustifyH(SteakInfoDB.side[self.name] or "CENTER")
 	self.text:SetText(text or "")
 	self:SetWidth(math.max(self:GetWidth(), self.text:GetStringWidth() + 30))
 	SteakInfoFrame:LayoutModules()
