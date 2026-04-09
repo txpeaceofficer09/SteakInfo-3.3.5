@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: SteakInfo: Well Fed Check
+## Notes: Add a well fed module to SteakInfo.
+## Author: Soonbesteak
+## Version 1.0.0
+## RequiredDeps: SteakInfo
+Core.lua
