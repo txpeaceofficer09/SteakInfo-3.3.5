@@ -10,9 +10,11 @@ local function OnEnter(self)
 
 	local sp = SteakInfoDB.SpellPower[UnitName("player")].maxSP or 0
 	local crit = SteakInfoDB.SpellPower[UnitName("player")].maxCrit or 0
+	local haste = SteakInfoDB.SpellPower[UnitName("player")].maxHaste or 0
 
 	SteakInfoTooltip:AddDoubleLine("Highest Spell Power", sp)
 	SteakInfoTooltip:AddDoubleLine("Highest Crit Chance", ("%.2f%%"):format(crit))
+	SteakInfoTooltip:AddDoubleLine("Highest Haste", ("%.2f%%"):format(haste))
 
 	SteakInfoTooltip:Show()
 end
@@ -23,28 +25,31 @@ local function OnLeave(self)
 end
 
 local function GetStats()
-	local sp, crit = 0, 0
+	local sp, crit, haste = 0, 0, 0
 
 	for school=2,7 do
 		sp = GetSpellBonusDamage(school) or 0
 		crit = GetSpellCritChance(school) or 0
 	end
 
-	return sp, crit
+	haste = GetCombatRating(CR_HASTE_SPELL) / 32.79 or 0
+
+	return sp, crit, haste
 end
 
 local function UpdateSpell(self)
-	local sp, crit = GetStats()
+	local sp, crit, haste = GetStats()
 
 	SteakInfoDB.SpellPower[UnitName("player")].maxSP = math.max(sp, SteakInfoDB.SpellPower[UnitName("player")].maxSP or 0)
 	SteakInfoDB.SpellPower[UnitName("player")].maxCrit = math.max(crit, SteakInfoDB.SpellPower[UnitName("player")].maxCrit or 0)
+	SteakInfoDB.SpellPower[UnitName("player")].maxHaste = math.max(haste, SteakInfoDB.SpellPower[UnitName("player")].maxHaste or 0)
 
-	self:SetText(("SP: %d  Crit: %.2f%%"):format(sp, crit))
+	self:SetText(("SP: %d  Crit: %.2f%%  Haste: %.2f%%"):format(sp, crit, haste))
 end
 
 local function OnVariablesLoaded(self)
 	SteakInfoDB.SpellPower = SteakInfoDB.SpellPower or {}
-	SteakInfoDB.SpellPower[UnitName("player")] = SteakInfoDB.SpellPower[UnitName("player")] or { maxSP = 0, maxCrit = 0 }
+	SteakInfoDB.SpellPower[UnitName("player")] = SteakInfoDB.SpellPower[UnitName("player")] or { maxSP = 0, maxCrit = 0 , maxHaste = 0 }
 end
 
 local events = {
