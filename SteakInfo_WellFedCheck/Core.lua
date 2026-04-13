@@ -3,6 +3,28 @@ local wellFedIDs = {
 	[34753] = "Great Feast",
 }
 
+local function SendList(prefix, list, chatType)
+	local max = 245 
+	local msg = prefix
+	local first = true
+
+	for index, name in ipairs(list) do
+		local add = first and name or (", "..name)
+		first = false
+
+		if #msg + #add >= max then
+			SendChatMessage(msg, chatType)
+			msg = prefix..name
+		else
+			msg = msg..add
+
+			if index == #list then
+				SendChatMessage(msg, chatType)
+			end
+		end
+	end
+end
+
 local function GetUnitWellFed(unit)
 	for i = 1, 40 do
 		local name, _, _, _, _, duration, expirationTime, _, _, _, spellID = UnitAura(unit, i)
@@ -91,7 +113,7 @@ local function OnClick(self, button)
 	SendChatMessage("Well Feds:", chatType)
 
 	for _, data in ipairs(list) do
-		local message = ("%s %s (%s)"):format(data.name, data.WellFed, data.remaining)
+		local message = ("%s %s (%s)"):format(data.name, data.WellFed or "NONE", data.remaining)
 		SendChatMessage(message, chatType)
 	end
 end
@@ -185,7 +207,8 @@ local events = {
 		if #missing == 0 then
 			SendChatMessage("All group members are Well Fed.", chatType)
 		else
-			SendChatMessage(("Missing Well Fed: %s"):format(table.concat(missing, ", ")))
+			--SendChatMessage(("Missing Well Fed: %s"):format(table.concat(missing, ", ")))
+			SendList("Missing Well Fed: ", missing, chatType)
 		end
 	end
 }
