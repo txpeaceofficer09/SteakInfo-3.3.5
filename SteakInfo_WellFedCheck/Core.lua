@@ -1,4 +1,7 @@
---local wellFedIDs = {}
+local wellFedIDs = {
+	[57399] = "Fish Feast",
+	[34753] = "Great Feast",
+}
 
 local function GetUnitWellFed(unit)
 	for i = 1, 40 do
@@ -12,8 +15,7 @@ local function GetUnitWellFed(unit)
 
 			if remaining < 0 then remaining = 0 end
 
-			--return wellFedIDs[spellID], remaining
-			return "Well Fed", remaining
+			return wellFedIDs[spellID] or "Well Fed ("..spellID..")", remaining
 		end
 	end
 
