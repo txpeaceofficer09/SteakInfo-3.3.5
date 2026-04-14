@@ -256,10 +256,10 @@ SteakInfoFrame:SetScript("OnEvent", OnEvent)
 
 hooksecurefunc("UIParent_ManageFramePositions", function()
 	local bar = MainMenuBar
-	local height = SteakInfo:GetHeight()
+	local height = SteakInfoFrame:GetHeight()
 
 	if not bar:IsShown() then return end
 
 	bar:ClearAllPoints()
-	bar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, height + 5)
+	bar:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, height + 2)
 end)
