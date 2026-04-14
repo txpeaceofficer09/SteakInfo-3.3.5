@@ -44,7 +44,8 @@ local function UpdateSpell(self)
 	SteakInfoDB.SpellPower[UnitName("player")].maxCrit = math.max(crit, SteakInfoDB.SpellPower[UnitName("player")].maxCrit or 0)
 	SteakInfoDB.SpellPower[UnitName("player")].maxHaste = math.max(haste, SteakInfoDB.SpellPower[UnitName("player")].maxHaste or 0)
 
-	self:SetText(("SP: %d  Crit: %.2f%%  Haste: %.2f%%"):format(sp, crit, haste))
+	--self:SetText(("SP: %d  Crit: %.2f%%  Haste: %.2f%%"):format(sp, crit, haste))
+	self:SetText(("SP: %d  Crit: %.2f%%"):format(sp, crit))
 end
 
 local function OnVariablesLoaded(self)
