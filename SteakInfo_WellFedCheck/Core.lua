@@ -196,12 +196,14 @@ local events = {
 
 		for i=1,numGroupMembers do
 			local unit = groupType..i
+			local unitName = UnitName(unit)
 
-			if UnitExists(unit) and not GetUnitWellFed(unit) then table.insert(missing, UnitName(unit)) end
+			if UnitExists(unit) and not GetUnitWellFed(unit) then table.insert(missing, unitName) end
 		end
 
 		if groupType == "party" then
-			if not GetUnitWellFed("player") then table.insert(missing, UnitName("player")) end
+			local unitName = UnitName("player")
+			if not GetUnitWellFed("player") then table.insert(missing, unitName) end
 		end
 
 		if #missing == 0 then
