@@ -54,14 +54,6 @@ local function ShowRoster()
 
 	local PAD = 10
 
-	--[[
-	maxName  = maxName  + PAD
-	maxLevel = maxLevel + PAD
-	maxRank  = maxRank  + PAD
-	maxZone  = maxZone  + PAD
-	maxNote  = maxNote  + PAD
-	]]
-
 	for _, bar in ipairs(bars) do bar:Hide() end
 
 	if not header then
@@ -100,16 +92,6 @@ local function ShowRoster()
 		header.note:SetJustifyH("LEFT")
 		header.note:SetPoint("LEFT", header.zone, "RIGHT", 0, 0)
 	end
-	--[[
-	else
-		header.name:SetWidth(maxName)
-		header.level:SetWidth(maxLevel)
-		header.rank:SetWidth(maxRank)
-		header.zone:SetWidth(maxZone)
-		header.note:SetWidth(maxNote)
-		header:Show()
-	end
-	]]
 
 	maxName = math.max(header.name:GetStringWidth(), maxName) + PAD
 	maxLevel = math.max(header.level:GetStringWidth(), maxLevel) + PAD
@@ -252,7 +234,7 @@ local function OnSystemMessage(self, msg)
 end
 
 local function OnClick(self, button)
-	PanellTemplates_SetTab(FriendsFrame, 3)
+	PanelTemplates_SetTab(FriendsFrame, 3)
 	ShowUIPanel(FriendsFrame)
 end
 
