@@ -150,7 +150,7 @@ local function GetBagSpace()
 end
 
 local function FormatBagString(free, total)
-	return ("|T%s:12:12:0:0|t %d / %d"):format("Interface\\Buttons\\Button-Backpack-Up", free, total)
+	return ("|T%s:16:16:0:0|t %d / %d"):format("Interface\\Buttons\\Button-Backpack-Up", free, total)
 end
 
 local function UpdateBags(self)
