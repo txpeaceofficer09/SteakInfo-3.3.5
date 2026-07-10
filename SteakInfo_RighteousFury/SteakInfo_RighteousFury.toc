@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: SteakInfo: Righteous Fury
+## Notes: Add module to show everyone in group running Righteous Fury.
+## Author: Soonbesteak
+## Version 1.0.0
+## RequiredDeps: SteakInfo
+Core.lua
