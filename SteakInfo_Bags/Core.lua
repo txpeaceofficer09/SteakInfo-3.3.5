@@ -35,8 +35,14 @@ local function BuildCurrencyList()
 		end
 	end
 
+	local faction = UnitFactionGroup("player")
+
 	for i = 1, GetCurrencyListSize() do
 		local name, isHeader, isExpanded, isUnused, isWatched, count, _, icon = GetCurrencyListInfo(i)
+
+		if name == "Conquest" then
+			icon = ("Interface\\PVPFrame\\PVPCurrency-%s-%s"):format(name, faction)
+		end
 
 		if not isHeader and name and count then
 			list[#list+1] = {
@@ -142,7 +148,7 @@ local function GetBagSpace()
 		local slots = GetContainerNumSlots(bag)
 		if slots and slots > 0 then
 			total = total + slots
-			free  = free + GetContainerNumFreeSlots(bag)
+			free = free + GetContainerNumFreeSlots(bag)
 		end
 	end
 
