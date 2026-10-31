@@ -23,6 +23,14 @@ local function GetSchoolColor(school)
 	return SCHOOL_COLORS[school] or { r = 0.8, g = 0.8, b = 0.8 }
 end
 
+local function IsDomination()
+	for i=1,40 do
+		if UnitAura("player", i) == "Domination" then return true end
+	end
+
+	return false
+end
+
 local function EnsureSpellRecord(event, spellID, spellName, spellSchool)
 	--local key = ("%d:%s"):format(spellID, event)
 	local key = event:match("_PERIODIC_DAMAGE$") and spellName.." (DoT)" or event:match("_PERIODIC_HEAL$") and spellName.." (HoT)" or spellName
@@ -46,6 +54,7 @@ end
 local function UpdateRecord(event, spellID, spellName, spellSchool, kind, amount, critical, target)
 	if not spellID or not amount or amount <= 0 then return end
 	if not IsSpellKnown(spellID) then return end
+	if IsDomination() then return end
 
 	local record = EnsureSpellRecord(event, spellID, spellName, spellSchool)
 	local data = record[kind]
